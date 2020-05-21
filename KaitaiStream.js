@@ -789,6 +789,16 @@ var ValidationNotAnyOfError = KaitaiStream.ValidationNotAnyOfError = function(ac
 ValidationNotAnyOfError.prototype = Object.create(Error.prototype);
 ValidationNotAnyOfError.prototype.constructor = ValidationNotAnyOfError;
 
+var ValidationExprError = KaitaiStream.ValidationExprError = function(actual, io, srcPath) {
+  this.name = "ValidationExprError";
+  this.message = "not matching the expression, got [" + actual + "]";
+  this.actual = actual;
+  this.stack = (new Error()).stack;
+};
+
+ValidationExprError.prototype = Object.create(Error.prototype);
+ValidationExprError.prototype.constructor = ValidationExprError;
+
 /**
   Ensures that we have an least `length` bytes left in the stream.
   If that's not true, throws an EOFError.
