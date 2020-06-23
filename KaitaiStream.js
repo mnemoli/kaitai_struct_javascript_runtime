@@ -152,6 +152,35 @@ KaitaiStream.prototype.seek = function(pos) {
   this.pos = (isNaN(npos) || !isFinite(npos)) ? 0 : npos;
 };
 
+// Boyer-Moore-Horspool
+KaitaiStream.prototype.scan = function(scanStart) {
+  var preprocessed = preprocessForScan(scanStart);
+  var skip = 0;
+  var buffLength = this._buffer.byteLength;
+  var view = new Uint8Array(this._buffer);
+  while(buffLength - skip >= scanStart.length) {
+    var slice = view.slice(skip, skip + scanStart.length);
+    if(compareArrays(slice, scanStart))
+      return skip;
+    else skip = skip + preprocessed[view[skip + scanStart.length - 1]]
+  }
+};
+
+function preprocessForScan(scanStart) {
+  const MAX_SIZE = 256;
+  const t = Array(MAX_SIZE).fill(scanStart.length);
+  for(var i = 0; i < scanStart.length - 1; i++) {
+    t[scanStart[i]] = scanStart.length - 1 - i
+  }
+  return t
+}
+
+function compareArrays(one, two) {
+  return one.every(function (v, i) {
+    return v === two[i]
+  });
+}
+
 /**
   Returns the byte length of the KaitaiStream object.
   @type {number}
